@@ -1,0 +1,2 @@
+# Fullstack marketplace application with microfrontend architecture.
+### Built with Next.js, React, Express and Prisma. Uses Turborepo for monorepo architecture. This project helps me master fullstack development and start exploring microservice architecture

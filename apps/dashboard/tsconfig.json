@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "target": "es2020",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "strict": true,
+    "typeRoots": ["./node_modules/@types"],
+    "types": ["vite/client"],
+  },
+  "include": ["src"]
+}
