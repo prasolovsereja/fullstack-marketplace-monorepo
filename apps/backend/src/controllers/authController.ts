@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import authServices from "@/services/authServices";
-import { userSchema} from "@/utils/validation";
+import {loginSchema, userSchema} from "@/utils/validation";
 import { HttpError } from "@/utils/HttpError";
 
 
@@ -20,4 +20,17 @@ export const authController = {
         }
 
     },
+    login: async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const result = loginSchema.safeParse((req.body));
+            if (!result.success) {
+                next(new HttpError(400, 'Invalid credentials'));
+            }
+            const {token, user} = await authServices.login(result.data!);
+            res.status(200).json({token, user});
+            console.log('User login successfully');
+        } catch (error) {
+            next(error);
+        }
+    }
 }
