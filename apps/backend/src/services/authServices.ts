@@ -30,15 +30,21 @@ const authServices = {
             throw new HttpError(401, 'User not found');
         }
         const { password: userPassword, ...publicUser } = user! as User;
-        console.log(publicUser);
+
         const isMatch = await bcrypt.compare(password, userPassword);
         if (!isMatch) {
             throw new HttpError(401, 'Invalid password');
         }
         const {id, role} = publicUser
         const token = signJwt({ id, role }, '1h');
-        console.log('token', token);
+
         return { token, user: publicUser };
+    },
+    me: async (data: {id: number, role: string}) => {
+        const id = data.id;
+        const user = await prisma.user.findUnique({ where: { id: id}})
+        const { password, ...publicUser } = user!
+        return { user: publicUser };
     }
 }
 export default authServices;

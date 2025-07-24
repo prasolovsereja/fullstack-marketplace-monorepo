@@ -32,5 +32,14 @@ export const authController = {
         } catch (error) {
             next(error);
         }
+    },
+    me: async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const user = await authServices.me(req.body);
+            console.log('User login successfully');
+            res.status(200).json({user});
+        } catch (err) {
+            next(err);
+        }
     }
 }
