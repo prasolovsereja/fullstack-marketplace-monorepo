@@ -1,7 +1,7 @@
-// import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@/../generated/prisma';
 import dotenv from 'dotenv';
 import * as process from 'node:process';
-import {PrismaClient} from "@prisma/client/extension";
+
 
 dotenv.config();
 
