@@ -31,6 +31,32 @@ const productsServices = {
             }
             throw new HttpError(500, 'Неизвестная ошибка при создании товара');
         }
+    },
+    getSellerProducts: async (userId: number, {limit, offset}: {limit: number, offset: number}) => {
+        try {
+            return await prisma.product.findMany({
+                where: {sellerId: userId},
+                skip: offset,
+                take: limit,
+            });
+
+        }   catch (error) {
+            if (error.code === 'P2025') {
+                throw new HttpError(404, 'Товары продавца не найдены');
+            }
+            throw new HttpError(500, 'Неизвестная ошибка при создании товара');
+        }
+    },
+    getClientProducts: async ({limit, offset}: {limit: number, offset: number}) => {
+        try {
+            return await prisma.product.findMany({
+                skip: offset,
+                take: limit,
+            })
+        } catch (error) {
+            throw new HttpError(500, 'Неизвестная ошибка при создании товара');
+        }
     }
+
 }
 export default productsServices;

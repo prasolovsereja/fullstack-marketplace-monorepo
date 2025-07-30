@@ -41,3 +41,9 @@ export const validateCategoryIdsExist = async (data: [{ id: number, name: string
     }
     return true;
 }
+
+export const querySchema = z.object({
+    limit: z.string().optional().transform(val => Number(val ?? 12)).refine(n => n > 0 && n <= 100),
+    offset: z.string().optional().transform(val => Number(val ?? 0)).refine(n => n >= 0),
+});
+export type queryType = z.infer<typeof querySchema>;
