@@ -1,8 +1,11 @@
 import jwt from 'jsonwebtoken';
 import * as process from "node:process";
-
+export interface JwtPayload {
+    id: number;
+    role: 'BUYER' | 'SELLER' | 'ADMIN'
+}
 export const verifyJwt = async (token: string) => {
-    return new Promise<{id: number, role: string}>((resolve, reject) => {
+    return new Promise<JwtPayload>((resolve, reject) => {
         jwt.verify(token, process.env.JWT_SECRET!, (err, decoded) => {
             if (err) {
                 reject(err);

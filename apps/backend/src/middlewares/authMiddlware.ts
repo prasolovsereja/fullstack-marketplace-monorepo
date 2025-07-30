@@ -3,6 +3,7 @@ import {NextFunction, Request, Response} from "express";
 import {HttpError} from "@/utils/HttpError";
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
+    console.log(authHeader);
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
         next(new HttpError(401, "Token not provided"));
     }
@@ -11,7 +12,8 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
     if (!payload) {
         next(new HttpError(401, "Invalid JWT"));
     }
-    req.body = payload;
+    req.user = payload;
+    console.log(req.user);
     next();
 }
 

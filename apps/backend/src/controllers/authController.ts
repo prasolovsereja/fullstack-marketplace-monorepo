@@ -35,7 +35,7 @@ export const authController = {
     },
     me: async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const user = await authServices.me(req.body);
+            const user = await authServices.me(req.user!);
             console.log('User login successfully');
             res.status(200).json({user});
         } catch (err) {
