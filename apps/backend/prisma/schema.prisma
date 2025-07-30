@@ -20,10 +20,29 @@ model User {
   password    String
   role        Role      @default(BUYER)
   createdAt   DateTime  @default(now())
+  products    Product[] @relation("SellerProducts")
 }
 
 enum Role {
   BUYER
   SELLER
   ADMIN
+}
+
+model Product {
+  id            Int @id@default(autoincrement())
+  title         String
+  description   String?
+  price         Int
+  quantity      Int
+  seller        User @relation("SellerProducts",fields: [sellerId], references: [id])
+  sellerId      Int
+  categories    Category[]  @relation("ProductsCategories")
+}
+
+model Category {
+  id            Int @id@default(autoincrement())
+  name          String @unique
+  products      Product[] @relation("ProductsCategories")
+
 }

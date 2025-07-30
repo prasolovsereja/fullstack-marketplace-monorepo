@@ -12,6 +12,7 @@
     "paths": {
       "@/*": ["*"]
     },
+    "typeRoots": ["./node_modules/@types", "./types"],
     "noUnusedLocals": true,
     "noUnusedParameters": false
   },
