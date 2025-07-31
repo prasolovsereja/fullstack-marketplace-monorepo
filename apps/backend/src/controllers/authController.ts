@@ -28,7 +28,7 @@ export const authController = {
             }
             const {token, user} = await authServices.login(result.data!);
             res.status(200).json({token, user});
-            console.log('User login successfully');
+            console.log('User login successfully redirect to app');
         } catch (error) {
             next(error);
         }
@@ -37,6 +37,7 @@ export const authController = {
         try {
             const user = await authServices.me(req.user!);
             console.log('User login successfully');
+            console.log('auth/me okay');
             res.status(200).json({user});
         } catch (err) {
             next(err);
