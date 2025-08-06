@@ -4,10 +4,13 @@
     "jsx": "react-jsx",
     "target": "es2020",
     "module": "esnext",
+    "lib": ["DOM", "DOM.Iterable", "ES2020"],
     "moduleResolution": "node",
     "strict": true,
     "typeRoots": ["./node_modules/@types"],
     "types": ["vite/client"],
+    "baseUrl": "./src"
+
   },
   "include": ["src"]
 }
