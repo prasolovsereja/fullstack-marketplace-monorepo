@@ -28,8 +28,16 @@ export const productsApi = createApi(({
                 params: { limit, offset },
             }),
             providesTags: ['Products'],
+        }),
+        createProduct: builder.mutation<Product, Omit<Product, 'sellerId'>>({
+            query: ({ product }) => ({
+                url: '/',
+                body: product,
+                method: 'POST',
+            }),
+            invalidatesTags: ['Products'],
         })
     })
 }))
-const {useGetProductsQuery} = productsApi;
-export {useGetProductsQuery};
+const {useGetProductsQuery, useCreateProductMutation} = productsApi;
+export {useGetProductsQuery, useCreateProductMutation};
