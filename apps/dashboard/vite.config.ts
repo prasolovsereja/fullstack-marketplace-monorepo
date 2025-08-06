@@ -5,5 +5,10 @@ export default defineConfig({
   plugins: [react()],
   base: '/',
   root: './',
+  server: {
+    proxy: {
+      '/api': 'http://localhost:4000/',
+    }
+  },
   publicDir: 'public'
 })
