@@ -25,6 +25,7 @@ export const productsController = {
             const {id, role}: JwtPayload = user;
             if (role === 'SELLER') {
                 const products = await productsServices.getSellerProducts(id, {limit, offset})
+                console.log('products', products);
                 res.status(200).json({products});
             } else {
                 const products = await productsServices.getClientProducts({limit, offset})
