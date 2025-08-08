@@ -1,14 +1,12 @@
 import ProductsGrid from "../../../../packages/ui/ProductsGrid";
 import {useAppSelector} from "../slices/hooks";
 import {useGetProductsQuery} from "../api/productsApi";
+import ProductForm from "../components/ProductForm";
 
-import api from "../api/axios";
-import {buildUrl} from "../api/config";
-import {useEffect} from "react";
 const MainPage = () => {
     const auth = useAppSelector((state) => state.auth);
     const {data: products = []} = useGetProductsQuery({limit: 10, offset: 0});
-    console.log('rtkquery products',products);
+
     // useEffect(() => {
     //     const getProducts = async () => {
     //         try{
@@ -21,7 +19,14 @@ const MainPage = () => {
     //     getProducts()
     // }, [])
     return (
-        <ProductsGrid></ProductsGrid>
+        <>
+            <div className='container'>
+                <ProductsGrid></ProductsGrid>
+            </div>
+            <div>
+                <ProductForm />
+            </div>
+        </>
     )
 }
 export default MainPage;
