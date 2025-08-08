@@ -11,11 +11,7 @@ const baseQuery = fetchBaseQuery({
     baseUrl: buildUrl('products'),
     credentials: 'include',
 });
-type CustomBaseQuery = BaseQueryFn<
-    string | FetchArgs,
-    unknown,
-    FetchBaseQueryError
->;
+
 
 export const productsApi = createApi(({
     reducerPath: 'products',
@@ -29,8 +25,8 @@ export const productsApi = createApi(({
             }),
             providesTags: ['Products'],
         }),
-        createProduct: builder.mutation<Product, Omit<Product, 'sellerId'>>({
-            query: ({ product }) => ({
+        createProduct: builder.mutation<Product, Omit<Product, 'id' | 'sellerId'>>({
+            query: (product) => ({
                 url: '/',
                 body: product,
                 method: 'POST',
