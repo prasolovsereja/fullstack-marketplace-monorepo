@@ -2,8 +2,13 @@ export interface Product {
     id: number;
     title: string;
     price: number;
+    description?: string;
     quantity: number;
     sellerId: number;
+    categories: Array<{
+        id: number;
+        name: string;
+    }>
 }
 export interface ProductsGridProps {
     products: Product[];

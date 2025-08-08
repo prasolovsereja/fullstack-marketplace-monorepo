@@ -4,3 +4,8 @@ export interface User {
     role: 'SELLER' | 'BUYER' | 'ADMIN';
     createdAt: Date;
 }
+export interface Category {
+    id: number;
+    name: string;
+    isFeatured: boolean;
+}
