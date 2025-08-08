@@ -7,10 +7,11 @@ export const categoryController = {
         try {
             const { role }: JwtPayload = req.user;
             if (role === 'SELLER') {
-                const categories =  categoryServices.getAllCategories();
+                const categories = await categoryServices.getAllCategories();
+                console.log('categories', categories);
                 res.status(200).json(categories);
             } else {
-                const categories = categoryServices.getFeaturedCategories();
+                const categories = await categoryServices.getFeaturedCategories();
                 res.status(200).json(categories);
             }
         } catch (error) {

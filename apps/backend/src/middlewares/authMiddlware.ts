@@ -13,7 +13,6 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
         next(new HttpError(401, "Invalid JWT"));
     }
     req.user = payload;
-    console.log(req.user);
     next();
 }
 
