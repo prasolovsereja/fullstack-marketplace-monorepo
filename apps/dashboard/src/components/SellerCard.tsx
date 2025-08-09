@@ -1,5 +1,6 @@
 import {SellerCardProps} from "../../../../packages/types/componentTypes";
 import {FC} from "react";
+import Button from "../../../../packages/ui/Button";
 
 const SellerCard: FC<SellerCardProps> = ({productId, title, quantity}) => {
     return (
@@ -10,6 +11,9 @@ const SellerCard: FC<SellerCardProps> = ({productId, title, quantity}) => {
             <p>
                 {quantity}
             </p>
+            <Button type='button' className='btn'>
+                ⋮
+            </Button>
         </div>
     )
 }
