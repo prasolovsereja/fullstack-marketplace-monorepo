@@ -12,13 +12,12 @@ export interface Product {
 }
 export interface ProductsGridProps {
     products: Product[];
-    renderCardContent: (product: Product) => React.ReactNode;
+    renderCardContent: (product: Product) => React.ReactElement<BuyerCardProps> | React.ReactElement<SellerCardProps>;
 
 }
-export interface ProductCardProps {
+export interface ProductCardProps extends React.HTMLAttributes<HTMLDivElement> {
     product: Product;
-    children: BuyerCardProps | SellerCardProps
-
+    children: React.ReactElement<BuyerCardProps> | React.ReactElement<SellerCardProps>;
 }
 export interface BuyerCardProps {
     productId: number;
