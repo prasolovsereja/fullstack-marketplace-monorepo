@@ -1,12 +1,29 @@
 import ProductsGrid from "../../../../packages/ui/ProductsGrid";
-import {useAppSelector} from "../slices/hooks";
+import {useAppDispatch, useAppSelector} from "../slices/hooks";
 import {useGetProductsQuery} from "../api/productsApi";
 import ProductForm from "../components/ProductForm";
+import Modal from "../components/common/Modal";
+import NavBar from "../components/NavBar";
+import {useState} from "react";
+import {logoutUser} from "../slices/authSlice";
+import SellerCard from "../components/SellerCard";
+import {Product} from "../../../../packages/types/componentTypes";
 
 const MainPage = () => {
-    const auth = useAppSelector((state) => state.auth);
-    const {data: products = []} = useGetProductsQuery({limit: 10, offset: 0});
+    // const auth = useAppSelector((state) => state.auth);
+    const dispatch = useAppDispatch();
+    const {data: products = [], isLoading, errors} = useGetProductsQuery({limit: 10, offset: 0});
+    const [isModalOpen, setModalOpen] = useState(false);
 
+    const handleLogout = () => {
+        dispatch(logoutUser());
+    }
+    const handleOpenModal = () => {
+        setModalOpen(true);
+    }
+    const renderCardContent = (product: Product) => {
+        return <SellerCard productId={product.id} title={product.title} quantity={product.quantity} />
+    };
     // useEffect(() => {
     //     const getProducts = async () => {
     //         try{
@@ -18,14 +35,27 @@ const MainPage = () => {
     //     }
     //     getProducts()
     // }, [])
+    console.log('products', products);
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
+    if (errors) {
+        return <div>Error...</div>;
+    }
     return (
         <>
+            <NavBar openModal={handleOpenModal} logout={handleLogout} />
             <div className='container'>
-                <ProductsGrid></ProductsGrid>
+                <ProductsGrid products={products.products} renderCardContent={renderCardContent}></ProductsGrid>
             </div>
-            <div>
-                <ProductForm />
-            </div>
+            {isModalOpen &&
+                <div>
+                    <Modal title='Создать товар' formId='add-product-form' onClose={() => setModalOpen(false)} >
+                        <ProductForm id='add-product-form' onClose={() => setModalOpen(false)} />
+                    </Modal>
+                </div>
+
+            }
         </>
     )
 }
