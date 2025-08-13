@@ -1,4 +1,18 @@
+'use client'
+
+import {useEffect, useState} from "react";
+
 const LoginPage = () => {
+    const [deviceType, setDeviceType] = useState('unknown');
+
+    useEffect(() => {
+        const userAgent = navigator.userAgent;
+        if (userAgent.match(/Android|Iphone|Ipod|Windows phone/i)) {
+            setDeviceType('userPhone');
+        } else if (userAgent.match(/Windows|Linux|Macintosh/i)) {
+            setDeviceType('userPc');
+        }
+    }, []);
     return (
         <main className='container d-flex flex-column justify-content-center align-items-center vh-100'>
             <div className='card p-4 shadow-sm'>
@@ -30,6 +44,7 @@ const LoginPage = () => {
                             required
                         />
                     </div>
+                    <input type='hidden' name='deviceType' value={deviceType}/>
                     <div className='mb-3 btn-group'>
                         <button type='submit' className='btn btn-primary w-100'>
                             Войти

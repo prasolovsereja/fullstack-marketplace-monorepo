@@ -9,8 +9,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     try {
-        const { email, password } = req.body;
-        const apiRes = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, { email, password });
+        const { email, password, deviceType } = req.body;
+
+        const apiRes = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, { email, password, userAgent: deviceType });
         const { token, user } = apiRes.data
         res.setHeader('Set-Cookie', serialize('accessToken', token, {
             httpOnly: true,

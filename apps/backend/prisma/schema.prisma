@@ -21,6 +21,7 @@ model User {
   role        Role      @default(BUYER)
   createdAt   DateTime  @default(now())
   products    Product[] @relation("SellerProducts")
+  sessions    Session[] @relation("UserSessions")
 }
 
 enum Role {
@@ -46,4 +47,35 @@ model Category {
   isFeatured    Boolean @default(false)
   products      Product[] @relation("ProductsCategories")
 
+}
+
+model Session {
+  id            Int @id@default(autoincrement())
+  userId        Int
+  user          User @relation("UserSessions", fields: [userId], references: [id])
+  deviceLabel   Labels
+  refreshToken  RefreshToken[] @relation("Session tokens")
+  createdAt     DateTime @default(now())
+  lastUsedAt    DateTime
+  revokedAt     DateTime?
+}
+
+model RefreshToken {
+  id            Int @id@default(autoincrement())
+  sessionId     Int
+  tokenHash     String @unique
+  session       Session @relation("Session tokens", fields: [sessionId], references: [id])
+  expiresAt     DateTime
+  replacedById  Int?
+  replacedBy    RefreshToken? @relation("TokenReplace", fields: [replacedById], references: [id])
+  replaced      RefreshToken[] @relation("TokenReplace")
+  updatedAt     DateTime
+  createdAt     DateTime @default(now())
+}
+
+enum Labels {
+  userPc
+  userPhone
+  guest
+  unknown
 }

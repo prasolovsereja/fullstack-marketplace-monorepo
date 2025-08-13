@@ -4,6 +4,8 @@ import type { CreateUserDto, LoginDto } from "@/utils/validation";
 import {HttpError} from "@/utils/HttpError";
 import {User} from "@/../generated/prisma";
 import { signJwt } from '@/utils/signJwt';
+import {getExpiresAt} from "@/utils/getExpiresAt";
+import {resolveDeviceLabel} from "@/utils/resolveDeviceLabel";
 
 const authServices = {
     register: async (dataDto: CreateUserDto) => {
@@ -22,7 +24,10 @@ const authServices = {
         }
     },
     login: async (dataDto: LoginDto) => {
-        const {email, password} = dataDto;
+        const {email, password, userAgent} = dataDto;
+
+        let deviceLabel = resolveDeviceLabel(userAgent);
+
         const user =  await prisma.user.findUnique({
             where: {email: email},
         });
@@ -36,9 +41,60 @@ const authServices = {
             throw new HttpError(401, 'Invalid password');
         }
         const {id, role} = publicUser
-        const token = signJwt({ id, role }, '1h');
 
-        return { token, user: publicUser };
+        const userSessions = await prisma.session.findMany({
+            where: {
+                userId: id,
+                revokedAt: null,
+                refreshToken: {
+                    some: {
+                        expiresAt: { gt: new Date()},
+                        replacedById: null,
+                    },
+                },
+            },
+            include: {
+                refreshToken: {
+                    where: {
+                        expiresAt: { gt: new Date()},
+                        replacedById: null,
+                    }
+                }
+            }
+        })
+
+        if (userSessions.some(session => session.deviceLabel === deviceLabel)) {
+            deviceLabel = 'guest';
+        }
+
+        const session = await prisma.session.create({
+            data: {
+                userId: id,
+                deviceLabel,
+                lastUsedAt: new Date(),
+                revokedAt: null,
+            }
+        });
+
+        const {id: sessionId} = session;
+
+        const token = signJwt({ id, role, sessionId }, '1h');
+        const refreshToken = signJwt({ id, role, sessionId }, '7Day');
+        const refreshExpiresAt = getExpiresAt(60 * 60 * 24 * 7);
+
+        const tokenHash = await bcrypt.hash(refreshToken, 10);
+
+        await prisma.refreshToken.create({
+            data: {
+                sessionId,
+                tokenHash,
+                replacedById: null,
+                expiresAt: refreshExpiresAt,
+                updatedAt: new Date(),
+            }
+        })
+
+        return { token, refreshToken, user: publicUser };
     },
     me: async (data: {id: number, role: string}) => {
         const id = data.id;
