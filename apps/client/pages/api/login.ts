@@ -17,7 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             secure: process.env.NODE_ENV === 'production',
             path: '/',
             sameSite: 'lax',
-            maxAge: 60 * 60 * 24,
+            maxAge: 60 * 60,
         }));
         console.log(token, user)
         if (user.role === 'SELLER') {

@@ -39,6 +39,9 @@ importers:
       bcrypt:
         specifier: ^6.0.0
         version: 6.0.0
+      cookie:
+        specifier: ^1.0.2
+        version: 1.0.2
       cookie-parser:
         specifier: ^1.4.7
         version: 1.4.7

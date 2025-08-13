@@ -4,7 +4,7 @@ import MainPage from "../pages/MainPage";
 
 interface NavBarProps {
     openModal: () => void;
-    logout: () => void;
+    logout: () => Promise<void>;
 }
 
 const NavBar: FC<NavBarProps> = ({openModal, logout}) => {

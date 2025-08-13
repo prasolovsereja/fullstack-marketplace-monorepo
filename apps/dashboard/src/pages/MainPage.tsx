@@ -5,9 +5,10 @@ import ProductForm from "../components/ProductForm";
 import Modal from "../components/common/Modal";
 import NavBar from "../components/NavBar";
 import {useState} from "react";
-import {logoutUser} from "../slices/authSlice";
 import SellerCard from "../components/SellerCard";
 import {Product} from "../../../../packages/types/componentTypes";
+import {useLogout} from "../hooks/useLogout";
+import {handleLogout} from "../utils/handleLogout";
 
 const MainPage = () => {
     // const auth = useAppSelector((state) => state.auth);
@@ -15,9 +16,6 @@ const MainPage = () => {
     const {data: products = [], isLoading, errors} = useGetProductsQuery({limit: 10, offset: 0});
     const [isModalOpen, setModalOpen] = useState(false);
 
-    const handleLogout = () => {
-        dispatch(logoutUser());
-    }
     const handleOpenModal = () => {
         setModalOpen(true);
     }
@@ -44,7 +42,7 @@ const MainPage = () => {
     }
     return (
         <>
-            <NavBar openModal={handleOpenModal} logout={handleLogout} />
+            <NavBar openModal={handleOpenModal} logout={() => handleLogout(dispatch)} />
             <div className='container'>
                 <ProductsGrid products={products.products} renderCardContent={renderCardContent}></ProductsGrid>
             </div>
