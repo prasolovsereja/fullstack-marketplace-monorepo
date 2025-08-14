@@ -12,14 +12,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const { email, password, deviceType } = req.body;
 
         const apiRes = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, { email, password, userAgent: deviceType });
-        const { token, user } = apiRes.data
-        res.setHeader('Set-Cookie', serialize('accessToken', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            path: '/',
-            sameSite: 'lax',
-            maxAge: 60 * 60,
-        }));
+        const { token, user, refreshToken } = apiRes.data
+        res.setHeader('Set-Cookie', [
+            serialize('accessToken', token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                path: '/',
+                sameSite: 'lax',
+                maxAge: 60 * 60,
+            }),
+            serialize('refreshToken', refreshToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                path: '/',
+                sameSite: 'lax',
+                maxAge: 60 * 60 * 24 * 7,
+            })
+        ]);
+
         console.log(token, user)
         if (user.role === 'SELLER') {
             res.writeHead(302, { Location: 'http://localhost:5173' }).end();
