@@ -6,6 +6,7 @@ import {serialize} from "cookie";
 import process from "node:process";
 import {JwtPayload} from "@/utils/verifyJwt";
 import {logoutUrls} from "@/utils/urlConfig";
+import {prisma} from "@/prisma";
 
 
 export const authController = {
@@ -30,8 +31,8 @@ export const authController = {
             if (!result.success) {
                 next(new HttpError(400, 'Invalid credentials'));
             }
-            const {token, user} = await authServices.login(result.data!);
-            res.status(200).json({token, user});
+            const {token, user, refreshToken} = await authServices.login(result.data!);
+            res.status(200).json({token, user, refreshToken});
 
         } catch (error) {
             next(error);
@@ -48,16 +49,30 @@ export const authController = {
     logout: async (req: Request, res: Response, next: NextFunction) => {
         try {
             console.log('logging out');
-            const { role }: JwtPayload = req.user;
-            const token = req.cookies.accessToken
-            res.setHeader('Set-Cookie', serialize('accessToken', token, {
-                httpOnly: true,
-                maxAge: 0,
-                path: '/',
-                sameSite: 'lax',
-                secure: process.env.NODE_ENV === 'production',
+            const { role, sessionId }: JwtPayload = req.user;
 
-            }));
+            await authServices.logout({sessionId});
+
+            const token = req.cookies.accessToken;
+            const refreshToken = req.cookies.refreshToken;
+
+            res.setHeader('Set-Cookie', [
+                serialize('accessToken', token, {
+                    httpOnly: true,
+                    maxAge: 0,
+                    path: '/',
+                    sameSite: 'lax',
+                    secure: process.env.NODE_ENV === 'production',
+
+                }),
+                serialize('refreshToken', refreshToken, {
+                    httpOnly: true,
+                    maxAge: 0,
+                    path: '/',
+                    sameSite: 'lax',
+                    secure: process.env.NODE_ENV === 'production',
+                }),
+            ]);
             switch (role) {
                 case 'SELLER':
                     res.status(200).json(logoutUrls.react);

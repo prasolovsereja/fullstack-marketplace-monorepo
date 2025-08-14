@@ -67,6 +67,7 @@ const authServices = {
             deviceLabel = 'guest';
         }
 
+
         const session = await prisma.session.create({
             data: {
                 userId: id,
@@ -101,6 +102,16 @@ const authServices = {
         const user = await prisma.user.findUnique({ where: { id: id}})
         const { password, ...publicUser } = user!
         return { user: publicUser };
-    }
+    },
+    logout: async ({ sessionId }) => {
+        await prisma.session.update({
+            where: {
+                id: sessionId,
+            },
+            data: {
+                revokedAt: new Date(),
+            }
+        })
+    },
 }
 export default authServices;
