@@ -6,7 +6,7 @@ import {serialize} from "cookie";
 import process from "node:process";
 import {JwtPayload} from "@/utils/verifyJwt";
 import {logoutUrls} from "@/utils/urlConfig";
-import {prisma} from "@/prisma";
+
 
 
 export const authController = {
@@ -85,6 +85,39 @@ export const authController = {
             }
         } catch (error) {
             next(new HttpError(400, 'Ошибка выхода'));
+        }
+    },
+    refresh: async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const {id, role, sessionId, refreshToken} = req.user;
+            const { newToken, newRefreshToken } = await authServices.refresh({id, role, sessionId, refreshToken});
+
+            res.setHeader('Set-Cookie', [
+                serialize('refreshToken', '', {
+                    httpOnly: true,
+                    maxAge: 0,
+                    path: '/',
+                    sameSite: 'lax',
+                    secure: process.env.NODE_ENV === 'production',
+                }),
+                serialize('refreshToken', newRefreshToken, {
+                    httpOnly: true,
+                    maxAge: 60 * 60 * 24 * 7,
+                    path: '/',
+                    sameSite: 'lax',
+                    secure: process.env.NODE_ENV === 'production',
+                }),
+                serialize('accessToken', newToken, {
+                    httpOnly: true,
+                    maxAge: 60 * 60,
+                    path: '/',
+                    sameSite: 'lax',
+                    secure: process.env.NODE_ENV === 'production',
+                }),
+            ]);
+            res.status(204).end();
+        } catch (error) {
+            next(new HttpError(400, 'Ошибка обновления токенов'));
         }
     }
 }
