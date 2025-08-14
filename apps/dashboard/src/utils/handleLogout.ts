@@ -4,7 +4,7 @@ import {buildUrl} from "../api/config";
 
 export const handleLogout = async (dispatch) => {
     try {
-        const response = await api.post(buildUrl('logout'),{}, {withCredentials: true});
+        const response = await api.patch(buildUrl('logout'),{}, {withCredentials: true});
         dispatch(logoutUser());
         window.location.replace(response.data);
     } catch (error) {
