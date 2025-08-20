@@ -7,7 +7,7 @@ import {Navigate} from "react-router-dom";
 export default function App() {
   useInitAuth();
 
-  const {user, isLoading, isAuthenticated} = useAppSelector(state => state.auth);
+  const {user, isLoading, isAuthenticated, isRefreshed} = useAppSelector(state => state.auth);
   console.log(user);
   if (isLoading) return <div>Loading...</div>;
   if (!isAuthenticated) return <Navigate to='http://localhost:3000/login' />;

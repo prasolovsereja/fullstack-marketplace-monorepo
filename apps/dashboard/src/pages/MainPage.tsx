@@ -7,7 +7,6 @@ import NavBar from "../components/NavBar";
 import {useState} from "react";
 import SellerCard from "../components/SellerCard";
 import {Product} from "../../../../packages/types/componentTypes";
-import {useLogout} from "../hooks/useLogout";
 import {handleLogout} from "../utils/handleLogout";
 
 const MainPage = () => {
