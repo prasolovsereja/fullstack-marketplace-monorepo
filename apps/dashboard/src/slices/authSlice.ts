@@ -5,12 +5,14 @@ interface authState {
     isAuthenticated: boolean;
     user: null | User;
     isLoading: boolean;
+    isRefreshed: boolean;
 }
 
 const initialState: authState = {
     isAuthenticated: false,
     user: null,
     isLoading: true,
+    isRefreshed: false,
 }
 
 const authSlice = createSlice({
@@ -26,9 +28,12 @@ const authSlice = createSlice({
             state.user = null;
             state.isLoading = true;
             state.isAuthenticated = false;
+        },
+        toggleRefresh: (state, action) => {
+            state.refreshed = action.payload;
         }
     }
 });
 
-export const { initUser, logoutUser } = authSlice.actions;
+export const { initUser, logoutUser, toggleRefresh } = authSlice.actions;
 export default authSlice.reducer;
