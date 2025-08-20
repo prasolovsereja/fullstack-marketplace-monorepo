@@ -6,16 +6,19 @@ import type {
 } from '@reduxjs/toolkit/query';
 import {Product} from "../../../../packages/types/componentTypes";
 import {buildUrl} from "./config";
+import {createBaseQueryWithReAuth} from "../utils/createBaseQueryWithReAuth";
+import {handleRefresh} from "../utils/handleRefresh";
 
 const baseQuery = fetchBaseQuery({
     baseUrl: buildUrl('products'),
     credentials: 'include',
 });
 
+const baseQueryWithReAuth = createBaseQueryWithReAuth({baseQuery, handleRefresh});
 
 export const productsApi = createApi(({
     reducerPath: 'products',
-    baseQuery,
+    baseQuery: baseQueryWithReAuth,
     tagTypes: ['Products'],
     endpoints: (builder) => ({
         getProducts: builder.query<Product[], {limit: number, offset: number}>({
