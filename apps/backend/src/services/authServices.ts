@@ -80,7 +80,7 @@ const authServices = {
 
         const {id: sessionId} = session;
 
-        const token = signJwt({ id, role, sessionId }, '1m');
+        const token = signJwt({ id, role, sessionId }, '1h');
         const refreshToken = signJwt({ id, role, sessionId }, '7Day');
         const refreshExpiresAt = getExpiresAt(60 * 60 * 24 * 7);
 
