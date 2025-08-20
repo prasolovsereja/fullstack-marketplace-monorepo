@@ -5,6 +5,7 @@ export const apiRoutes = {
     category: '/category',
     products: '/products',
     logout: '/auth/logout',
+    refresh: '/auth/refresh',
 }
 
 export type ApiRouteKey = keyof typeof apiRoutes;
