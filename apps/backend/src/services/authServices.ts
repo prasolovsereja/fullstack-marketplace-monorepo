@@ -6,6 +6,7 @@ import {User} from "@/../generated/prisma";
 import { signJwt } from '@/utils/signJwt';
 import {getExpiresAt} from "@/utils/getExpiresAt";
 import {resolveDeviceLabel} from "@/utils/resolveDeviceLabel";
+import {uuidv4} from "zod";
 
 const authServices = {
     register: async (dataDto: CreateUserDto) => {
@@ -79,7 +80,7 @@ const authServices = {
 
         const {id: sessionId} = session;
 
-        const token = signJwt({ id, role, sessionId }, '1h');
+        const token = signJwt({ id, role, sessionId }, '1m');
         const refreshToken = signJwt({ id, role, sessionId }, '7Day');
         const refreshExpiresAt = getExpiresAt(60 * 60 * 24 * 7);
 
@@ -133,41 +134,41 @@ const authServices = {
         })
     },
     refresh:  async ({ id, role, sessionId, refreshToken }) => {
-        const oldRefreshToken = await prisma.refreshToken.findFirst({
-            where: {
-                sessionId,
-                replacedById: null,
-            }
-        });
-        const { tokenHash: oldTokenHash, id: oldId } = oldRefreshToken;
+        try {
 
-        const isMatch =  await bcrypt.compare(oldTokenHash, refreshToken);
-        if (!isMatch) {
-            throw new HttpError(401, 'Refresh token failed');
+            const newToken = signJwt({ id, role, sessionId }, '1h');
+            const newRefreshToken = signJwt({ id, role, sessionId }, '7Day');
+            const refreshExpiresAt = getExpiresAt(60 * 60 * 24 * 7);
+            const newRefreshTokenHash = await bcrypt.hash(newRefreshToken, 10);
+
+            const {id: newId} = await prisma.refreshToken.create({
+                data: {
+                    sessionId,
+                    tokenHash: newRefreshTokenHash,
+                    expiresAt: refreshExpiresAt,
+                    updatedAt: new Date(),
+                    replacedById: null,
+                }
+            });
+            await prisma.refreshToken.updateMany({
+                where: {
+                    sessionId,
+                    replacedById: null,
+                    NOT: { id: newId}
+                },
+                data: { replacedById: newId, expiresAt: new Date(), updatedAt: new Date(),}
+            })
+
+            return {token: newToken, refreshToken: newRefreshToken};
+        } catch (error: any) {
+            if (error.code === 'P2002') {
+                console.warn('Duplicate refresh token');
+                return { token: null, refreshToken: null };
+            } else {
+                console.error('refresh error', error);
+                return new HttpError(401, 'Refresh token failed');
+            }
         }
-
-        const newToken = signJwt({ id, role, sessionId }, '1h');
-        const newRefreshToken = signJwt({ id, role, sessionId }, '7Day');
-        const refreshExpiresAt = getExpiresAt(60 * 60 * 24 * 7);
-        const newRefreshTokenHash = await bcrypt.hash(newRefreshToken, 10);
-
-        const {id: newId} = await prisma.refreshToken.create({
-            data: {
-                sessionId,
-                tokenHash: newRefreshTokenHash,
-                expiresAt: refreshExpiresAt,
-                updatedAt: new Date(),
-                replacedById: null,
-            }
-        });
-        await prisma.refreshToken.update({
-            where: {
-                id: oldId,
-            },
-            data: { replacedById: newId, expiresAt: new Date(), updatedAt: new Date(),}
-        })
-
-        return {token: newToken, refreshToken: newRefreshToken};
     }
 }
 export default authServices;

@@ -7,7 +7,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
     const authHeader = req.headers.authorization;
     const token = req.cookies?.accessToken || (authHeader && authHeader.split(' ')[1]);
     if (!token) {
-        next(new HttpError(401, "Token not provided"));
+        next(new HttpError(401, "Access Token not provided"));
     }
     const payload = await verifyJwt(token);
     if (!payload) {

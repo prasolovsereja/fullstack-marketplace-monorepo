@@ -71,6 +71,8 @@ model RefreshToken {
   replaced      RefreshToken[] @relation("TokenReplace")
   updatedAt     DateTime
   createdAt     DateTime @default(now())
+
+  @@unique([sessionId, replacedById])
 }
 
 enum Labels {

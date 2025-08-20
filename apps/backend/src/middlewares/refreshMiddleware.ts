@@ -4,8 +4,9 @@ import {HttpError} from "@/utils/HttpError";
 
 export const refreshMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const refreshToken = req.cookies.refreshToken;
+
     if (!refreshToken) {
-        next(new HttpError(401, "Token not provided"));
+        next(new HttpError(401, "Refresh Token not provided"));
     }
     const payload = await verifyJwt(refreshToken);
     if (!payload) {

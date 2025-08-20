@@ -90,34 +90,38 @@ export const authController = {
     refresh: async (req: Request, res: Response, next: NextFunction) => {
         try {
             const {id, role, sessionId, refreshToken} = req.user;
-            const { newToken, newRefreshToken } = await authServices.refresh({id, role, sessionId, refreshToken});
-
-            res.setHeader('Set-Cookie', [
-                serialize('refreshToken', '', {
-                    httpOnly: true,
-                    maxAge: 0,
-                    path: '/',
-                    sameSite: 'lax',
-                    secure: process.env.NODE_ENV === 'production',
-                }),
-                serialize('refreshToken', newRefreshToken, {
-                    httpOnly: true,
-                    maxAge: 60 * 60 * 24 * 7,
-                    path: '/',
-                    sameSite: 'lax',
-                    secure: process.env.NODE_ENV === 'production',
-                }),
-                serialize('accessToken', newToken, {
-                    httpOnly: true,
-                    maxAge: 60 * 60,
-                    path: '/',
-                    sameSite: 'lax',
-                    secure: process.env.NODE_ENV === 'production',
-                }),
-            ]);
-            res.status(204).end();
+            const { token: newToken, refreshToken: newRefreshToken } = await authServices.refresh({id, role, sessionId, refreshToken});
+            if (!newToken || !newRefreshToken) {
+                res.status(204).end();
+            }
+            if (newToken && refreshToken) {
+                res.setHeader('Set-Cookie', [
+                    serialize('refreshToken', '', {
+                        httpOnly: true,
+                        maxAge: 0,
+                        path: '/',
+                        sameSite: 'lax',
+                        secure: process.env.NODE_ENV === 'production',
+                    }),
+                    serialize('refreshToken', newRefreshToken, {
+                        httpOnly: true,
+                        maxAge: 60 * 60 * 24 * 7,
+                        path: '/',
+                        sameSite: 'lax',
+                        secure: process.env.NODE_ENV === 'production',
+                    }),
+                    serialize('accessToken', newToken, {
+                        httpOnly: true,
+                        maxAge: 60 * 60,
+                        path: '/',
+                        sameSite: 'lax',
+                        secure: process.env.NODE_ENV === 'production',
+                    }),
+                ]);
+                res.status(204).end();
+            }
         } catch (error) {
-            next(new HttpError(400, 'Ошибка обновления токенов'));
+            next(error);
         }
     }
 }
