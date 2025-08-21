@@ -22,6 +22,8 @@ model User {
   createdAt   DateTime  @default(now())
   products    Product[] @relation("SellerProducts")
   sessions    Session[] @relation("UserSessions")
+  buyerOrders BuyerOrder[] @relation("BuyerOrders")
+  sellerOrders SellerOrder[] @relation("SellerOrders")
 }
 
 enum Role {
@@ -39,6 +41,7 @@ model Product {
   seller        User @relation("SellerProducts",fields: [sellerId], references: [id])
   sellerId      Int
   categories    Category[]  @relation("ProductsCategories")
+  orderItem     OrderItem[]
 }
 
 model Category {
@@ -80,4 +83,41 @@ enum Labels {
   userPhone
   guest
   unknown
+}
+
+model OrderItem {
+  id              Int @id@default(autoincrement())
+  productId       Int
+  product         Product @relation(fields: [productId], references: [id])
+  buyerId         Int
+  sellerId        Int
+  price           Int
+  quantity        Int
+  deliveryGroupId Int
+  deliveryGroup   DeliveryGroup @relation(fields: [deliveryGroupId], references: [id])
+  sellerOrderId   Int
+  sellerOrder     SellerOrder @relation(fields: [sellerOrderId], references: [id])
+}
+
+model SellerOrder {
+  id          Int @id@default(autoincrement())
+  orderItems  OrderItem[]
+  sellerId    Int
+  seller      User @relation("SellerOrders", fields: [sellerId], references: [id])
+
+}
+model BuyerOrder {
+  id              Int @id@default(autoincrement())
+  buyerId         Int
+  buyer           User @relation("BuyerOrders", fields: [buyerId], references: [id])
+  totalPrice      Int
+  deliveryGroups  DeliveryGroup[] @relation("OrderGroups")
+
+}
+model DeliveryGroup {
+  id Int @id@default(autoincrement())
+  items OrderItem[]
+  orderId Int
+  order BuyerOrder @relation("OrderGroups", fields: [orderId], references: [id])
+  deliveryDate DateTime
 }
