@@ -25,7 +25,8 @@ export const createProductSchema = z.object({
     categories: z.array(z.object({
         id: z.number().int(),
         name: z.string(),
-    }))
+    })),
+    deliveryProfileId: z.enum(['1', '2', '3']).transform(Number),
 })
 export type CreateProductDto = z.infer<typeof createProductSchema>;
 
