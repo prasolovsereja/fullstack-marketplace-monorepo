@@ -42,13 +42,19 @@ const productsServices = {
                 take: limit,
                 include: {deliveryProfile: true}
             });
-            return products.map((product) => ({
-                id: product.id,
-                title: product.title,
-                price: product.price,
-                quantity: product.quantity,
-                deliveryDuration: getDeliveryDuration(product.id, product.deliveryProfileId),
-            }));
+            const deliveryProfiles = await prisma.deliveryProfile.findMany({});
+
+            return products.map((product) => {
+                const productDeliveryProfile = deliveryProfiles.find((p) => p.id === product.deliveryProfileId);
+
+                return {
+                    id: product.id,
+                    title: product.title,
+                    price: product.price,
+                    quantity: product.quantity,
+                    deliveryDuration: getDeliveryDuration(product.id, productDeliveryProfile),
+                }
+            });
         }   catch (error) {
             if (error.code === 'P2025') {
                 throw new HttpError(404, 'Товары продавца не найдены');

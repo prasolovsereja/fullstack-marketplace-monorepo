@@ -12,7 +12,6 @@ export const productsController = {
             if (!result.success) {
                 next(new HttpError(400, 'Invalid credentials'));
             }
-            console.log('success');
             const product = await productsServices.createProduct(result.data!, user!.id);
             res.status(200).json({product});
         }  catch (e) {
