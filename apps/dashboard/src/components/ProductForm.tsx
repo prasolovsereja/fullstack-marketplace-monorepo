@@ -1,10 +1,13 @@
 import {useGetCategoriesQuery} from "../api/categoriesApi";
 import {useCreateProductMutation} from "../api/productsApi";
 import {useFormik} from "formik";
-import {toFormikValidationSchema} from "zod-formik-adapter";
 import {productSchema} from "../utils/validation";
 import {Product} from "../../../../packages/types/componentTypes";
-import {FC} from "react";
+import {FC, useEffect, useState} from "react";
+import {DeliveryProfile} from "../types/types";
+import {apiRequest} from "../api/apiRequest";
+import api from "../api/axios";
+import {buildUrl} from "../api/config";
 
 interface ProductFormProps {
     id: string;
@@ -14,12 +17,28 @@ interface ProductFormProps {
 const ProductForm: FC<ProductFormProps> = ({id, onClose}) => {
     const { data: categories = [], isLoading, error } = useGetCategoriesQuery();
     const [createProduct] = useCreateProductMutation();
-    const initialValues: Omit<Product, 'id' | 'sellerId'> = {
+    const [deliveryProfiles, setDeliveryProfiles] = useState<DeliveryProfile[]>();
+    useEffect(() => {
+        const fetchProfiles = async () => {
+            try {
+                const response = await apiRequest(() => api.get(`${buildUrl('seller')}/profiles`, {withCredentials: true}));
+                setDeliveryProfiles(response.data);
+            } catch (e) {
+                console.error('Не удалось загрузить условия доставки', e);
+            }
+        }
+        fetchProfiles();
+    }, []);
+    console.log(deliveryProfiles);
+    const initialValues: Omit<Product, 'id' | 'sellerId' | 'deliveryDuration'> & {
+        deliveryProfileId: number;
+    } = {
         title: '',
         description: '',
         quantity: 1,
         price: 0,
         categories: [],
+        deliveryProfileId: 1,
     };
     const formik = useFormik({
         initialValues,
@@ -89,6 +108,19 @@ const ProductForm: FC<ProductFormProps> = ({id, onClose}) => {
                         );
                     }}>
                     {categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
+                </select>
+            </div>
+            <div className='mb-3'>
+                <label htmlFor='delivery' className='form-label'>Варианты доставки</label>
+                <select
+                    className='form-select'
+                    name='delivery'
+                    value={formik.values.deliveryProfileId}
+                    onChange={(e) => formik.setFieldValue('deliveryProfileId', e.target.value)}
+                >
+                    {deliveryProfiles?.map((profile) => (
+                        <option key={profile.id} value={profile.id}>{profile.name}</option>
+                    ))}
                 </select>
             </div>
 
