@@ -9,3 +9,8 @@ export interface Category {
     name: string;
     isFeatured: boolean;
 }
+export interface DeliveryProfile {
+    id: number;
+    code: string;
+    name: string;
+}
