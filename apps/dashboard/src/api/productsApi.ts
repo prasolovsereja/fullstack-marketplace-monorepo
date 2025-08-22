@@ -28,7 +28,7 @@ export const productsApi = createApi(({
             }),
             providesTags: ['Products'],
         }),
-        createProduct: builder.mutation<Product, Omit<Product, 'id' | 'sellerId'>>({
+        createProduct: builder.mutation<Product, Omit<Product, 'id' | 'sellerId' | 'deliveryDuration'> & {deliveryProfileId: number}>({
             query: (product) => ({
                 url: '/',
                 body: product,
