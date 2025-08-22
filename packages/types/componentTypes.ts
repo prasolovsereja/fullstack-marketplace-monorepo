@@ -9,6 +9,7 @@ export interface Product {
         id: number;
         name: string;
     }>
+    deliveryDuration: number;
 }
 export interface ProductsGridProps {
     products: Product[];
