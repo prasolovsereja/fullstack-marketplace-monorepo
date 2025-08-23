@@ -50,3 +50,9 @@ export const querySchema = z.object({
     offset: z.string().optional().transform(val => Number(val ?? 0)).refine(n => n >= 0),
 });
 export type queryType = z.infer<typeof querySchema>;
+
+export const createOrderSchema = z.array(z.object({
+    productId: z.number().int().positive(),
+    quantity: z.number().int().min(1),
+}));
+export type createOrderDto = z.infer<typeof createOrderSchema>;
