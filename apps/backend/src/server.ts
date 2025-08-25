@@ -6,6 +6,7 @@ import {authRouter} from "@/routes/authRoutes";
 import {categoryRouter} from "@/routes/categoryRoutes";
 import {sellerHelperRoutes} from "@/routes/seller-helperRoutes";
 import {errorHandler} from "@/middlewares/errorHandler";
+import {orderRoutes} from "@/routes/orderRoutes";
 
 export const app = express();
 const allowedOrigins = [
@@ -33,3 +34,4 @@ app.use('/auth', authRouter);
 app.use('/products', productsRouter);
 app.use('/category', categoryRouter);
 app.use('/seller', sellerHelperRoutes);
+app.use('/orders', orderRoutes);

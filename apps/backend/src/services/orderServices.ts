@@ -2,6 +2,7 @@ import {prisma} from "@/prisma";
 import {createOrderDto} from "@/utils/validation";
 import {getDeliveryDuration} from "@/utils/getDeliveryDuration";
 import {getDeliveryDateFromDuration} from "@/utils/getDeliveryDateFromDuration";
+import {HttpError} from "@/utils/HttpError";
 
 interface OrderItemDraft {
     productId: number;
@@ -136,6 +137,44 @@ const orderServices = {
             }
         })
         return orderToReturn;
+    },
+    getSellerOrders: async (sellerId: number) => {
+        try {
+            return await prisma.sellerOrder.findMany({
+                where: {
+                    sellerId: sellerId,
+                },
+                include: {
+                    orderItems: true,
+                }
+            })
+        } catch (error) {
+            if(error.code === 'P2025') {
+                return new HttpError(404, 'User dont have orders')
+            }
+            return new HttpError(500, 'Unknown error');
+        }
+    },
+    getBuyerOrders: async (buyerId: number) => {
+        try {
+            return await prisma.buyerOrder.findMany({
+                where: {
+                    buyerId: buyerId,
+                },
+                include: {
+                    deliveryGroups: {
+                        include: {
+                            items: true
+                        }
+                    }
+                }
+            })
+        } catch (error) {
+            if(error.code === 'P2025') {
+                return new HttpError(404, 'User dont have orders')
+            }
+            return new HttpError(500, 'Unknown error');
+        }
     }
 };
 export default  orderServices;
