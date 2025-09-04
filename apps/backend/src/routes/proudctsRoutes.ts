@@ -5,4 +5,5 @@ import {authMiddleware} from "@/middlewares/authMiddlware";
 export const productsRouter = Router();
 
 productsRouter.post('/', authMiddleware, productsController.createProduct);
-productsRouter.get('/', authMiddleware, productsController.getProduct)
+productsRouter.get('/', authMiddleware, productsController.getProduct);
+productsRouter.get('/buyer', productsController.getBuyerProducts);

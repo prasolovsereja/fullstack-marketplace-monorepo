@@ -69,14 +69,20 @@ const productsServices = {
                 take: limit,
                 include: {deliveryProfile: true}
             })
-            return products.map((product) => ({
-                id: product.id,
-                title: product.title,
-                price: product.price,
-                quantity: product.quantity,
-                deliveryDuration: getDeliveryDuration(product.id, product.deliveryProfileId),
-            }))
+            const deliveryProfiles = await prisma.deliveryProfile.findMany({});
+            return products.map((product) => {
+                const productDeliveryProfile = deliveryProfiles.find((p) => p.id === product.deliveryProfileId);
+                return {
+                    id: product.id,
+                    title: product.title,
+                    price: product.price,
+                    quantity: product.quantity,
+                    deliveryDuration: getDeliveryDuration(product.id, productDeliveryProfile),
+                }
+
+            })
         } catch (error) {
+            console.error('ошибка при получении',error);
             throw new HttpError(500, 'Неизвестная ошибка при создании товара');
         }
     }

@@ -34,5 +34,14 @@ export const productsController = {
         } catch(e) {
             next(e);
         }
+    },
+    getBuyerProducts: async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { limit, offset }: queryType = await querySchema.parse(req.query);
+            const products = await productsServices.getClientProducts({limit, offset})
+            res.status(200).json({products});
+        } catch(e) {
+            next(e);
+        }
     }
 }
