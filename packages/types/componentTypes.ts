@@ -24,6 +24,8 @@ export interface BuyerCardProps {
     productId: number;
     title: string;
     price: number;
+    quantity: number;
+    deliveryDuration: number;
 }
 
 export interface SellerCardProps {

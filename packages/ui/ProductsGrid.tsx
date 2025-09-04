@@ -1,5 +1,5 @@
 import {ProductsGridProps} from "../types/componentTypes";
-import {FC} from "react";
+import {FC, useState} from "react";
 import ProductCard from "./ProductCard";
 
 const ProductsGrid: FC<ProductsGridProps> = ({ products, renderCardContent}) => {
